@@ -1,1 +1,1 @@
-include ':app', ':controlclient'
+include ':PiThingsClient', ':ControlClient'
