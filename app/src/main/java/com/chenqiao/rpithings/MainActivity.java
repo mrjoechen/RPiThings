@@ -37,8 +37,23 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
 
     // GPIO Pin Name
-    private static final String GPIO_NAME = "";
+    private static final String GPIO_NAME = "BCM6";
     private Gpio gpio;
+
+
+    //
+    private static final String GPIO_NAME1 = "BCM17";
+    private static final String GPIO_NAME2 = "BCM23";
+    private static final String GPIO_NAME3 = "BCM27";
+
+
+    private static final String GPIO_NAME4 = "BCM22";
+    private Gpio gpio1;
+    private Gpio gpio2;
+    private Gpio gpio3;
+    private Gpio gpio4;
+
+
 
 
     @Override
@@ -50,26 +65,180 @@ public class MainActivity extends AppCompatActivity {
         try {
             PeripheralManager manager = PeripheralManager.getInstance();
             gpio = manager.openGpio(GPIO_NAME);
+
+
+            gpio1 = manager.openGpio(GPIO_NAME1);
+            gpio2 = manager.openGpio(GPIO_NAME2);
+            gpio3 = manager.openGpio(GPIO_NAME3);
+            gpio4 = manager.openGpio(GPIO_NAME4);
+
         } catch (IOException e) {
             Log.w(TAG, "Unable to access GPIO", e);
         }
 
 
+        try {
+            init();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         Button btnExit = findViewById(R.id.btn_exit);
-
-
-
         btnExit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finish();
+                stop();
+                System.exit(0);
             }
         });
 
 
+        Button btn_1 = findViewById(R.id.btn_1);
+        btn_1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                go();
+            }
+        });
+        Button btn_2 = findViewById(R.id.btn_2);
+        btn_2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+               back();
+            }
+        });
+
+        Button btn_3 = findViewById(R.id.btn_3);
+        btn_3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                left();
+            }
+        });
+        Button btn_4 = findViewById(R.id.btn_4);
+        btn_4.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                right();
+            }
+        });
+        Button btn_5 = findViewById(R.id.btn_5);
+        btn_5.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                stop();
+            }
+        });
     }
 
+
+    private void init() throws IOException {
+
+        gpio.setDirection(Gpio.DIRECTION_OUT_INITIALLY_LOW);
+        gpio1.setDirection(Gpio.DIRECTION_OUT_INITIALLY_LOW);
+        gpio2.setDirection(Gpio.DIRECTION_OUT_INITIALLY_LOW);
+        gpio3.setDirection(Gpio.DIRECTION_OUT_INITIALLY_LOW);
+        gpio4.setDirection(Gpio.DIRECTION_OUT_INITIALLY_LOW);
+
+    }
+
+    private void go() {
+
+//        gpio.setActiveType(Gpio.ACTIVE_LOW);
+//        gpio1.setActiveType(Gpio.ACTIVE_LOW);
+//        gpio2.setActiveType(Gpio.ACTIVE_LOW);
+//        gpio3.setActiveType(Gpio.ACTIVE_LOW);
+//        gpio4.setActiveType(Gpio.ACTIVE_LOW);
+
+        try {
+            gpio.setValue(true);
+            gpio1.setValue(true);
+            gpio2.setValue(false);
+            gpio3.setValue(true);
+            gpio4.setValue(false);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void back() {
+
+//        gpio.setActiveType(Gpio.ACTIVE_LOW);
+//        gpio1.setActiveType(Gpio.ACTIVE_LOW);
+//        gpio2.setActiveType(Gpio.ACTIVE_LOW);
+//        gpio3.setActiveType(Gpio.ACTIVE_LOW);
+//        gpio4.setActiveType(Gpio.ACTIVE_LOW);
+
+        try {
+            gpio.setValue(true);
+            gpio1.setValue(false);
+            gpio2.setValue(true);
+            gpio3.setValue(false);
+            gpio4.setValue(true);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void left() {
+
+//        gpio.setActiveType(Gpio.ACTIVE_LOW);
+//        gpio1.setActiveType(Gpio.ACTIVE_LOW);
+//        gpio2.setActiveType(Gpio.ACTIVE_LOW);
+//        gpio3.setActiveType(Gpio.ACTIVE_LOW);
+//        gpio4.setActiveType(Gpio.ACTIVE_LOW);
+
+
+        try {
+            gpio.setValue(true);
+            gpio1.setValue(false);
+            gpio2.setValue(false);
+            gpio3.setValue(true);
+            gpio4.setValue(false);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void right() {
+
+//        gpio.setActiveType(Gpio.ACTIVE_LOW);
+//        gpio1.setActiveType(Gpio.ACTIVE_LOW);
+//        gpio2.setActiveType(Gpio.ACTIVE_LOW);
+//        gpio3.setActiveType(Gpio.ACTIVE_LOW);
+//        gpio4.setActiveType(Gpio.ACTIVE_LOW);
+
+
+        try {
+            gpio.setValue(true);
+            gpio1.setValue(true);
+            gpio2.setValue(false);
+            gpio3.setValue(false);
+            gpio4.setValue(false);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void stop() {
+
+//        gpio.setActiveType(Gpio.ACTIVE_LOW);
+//        gpio1.setActiveType(Gpio.ACTIVE_LOW);
+//        gpio2.setActiveType(Gpio.ACTIVE_LOW);
+//        gpio3.setActiveType(Gpio.ACTIVE_LOW);
+//        gpio4.setActiveType(Gpio.ACTIVE_LOW);
+
+
+        try {
+            gpio.setValue(false);
+            gpio1.setValue(false);
+            gpio2.setValue(false);
+            gpio3.setValue(false);
+            gpio4.setValue(false);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     @Override
     protected void onDestroy() {
@@ -177,7 +346,6 @@ public class MainActivity extends AppCompatActivity {
         gpio.setDirection(Gpio.DIRECTION_OUT_INITIALLY_HIGH);
         // Low voltage is considered active
         gpio.setActiveType(Gpio.ACTIVE_LOW);
-
         // Toggle the value to be LOW
         gpio.setValue(true);
     }
