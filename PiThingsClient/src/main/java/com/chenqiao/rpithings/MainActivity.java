@@ -1,16 +1,22 @@
 package com.chenqiao.rpithings;
 
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Switch;
+import android.widget.TextView;
 
+import com.chenqiao.rpithings.TinyServer.TinyHttpd;
 import com.google.android.things.pio.Gpio;
 import com.google.android.things.pio.GpioCallback;
 import com.google.android.things.pio.PeripheralManager;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 /**
  * Skeleton of an Android Things activity.
@@ -31,7 +37,7 @@ import java.io.IOException;
  *
  * @see <a href="https://github.com/androidthings/contrib-drivers#readme">https://github.com/androidthings/contrib-drivers#readme</a>
  */
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements TinyHttpd.OnServListener{
 
 
     private static final String TAG = "MainActivity";
@@ -45,16 +51,15 @@ public class MainActivity extends AppCompatActivity {
     private static final String GPIO_NAME1 = "BCM17";
     private static final String GPIO_NAME2 = "BCM23";
     private static final String GPIO_NAME3 = "BCM27";
-
-
     private static final String GPIO_NAME4 = "BCM22";
     private Gpio gpio1;
     private Gpio gpio2;
     private Gpio gpio3;
     private Gpio gpio4;
+    private TextView textView;
 
 
-
+    private Handler mHandler = new Handler();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,14 +102,25 @@ public class MainActivity extends AppCompatActivity {
         btn_1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                go();
+                mHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        go();
+                    }
+                });
+
             }
         });
         Button btn_2 = findViewById(R.id.btn_2);
         btn_2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               back();
+                mHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        back();
+                    }
+                });
             }
         });
 
@@ -112,23 +128,102 @@ public class MainActivity extends AppCompatActivity {
         btn_3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                left();
+                mHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        left();
+                    }
+                });
             }
         });
         Button btn_4 = findViewById(R.id.btn_4);
         btn_4.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                right();
+                mHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        right();
+                    }
+                });
             }
         });
         Button btn_5 = findViewById(R.id.btn_5);
         btn_5.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                stop();
+                mHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        stop();
+                    }
+                });
+
             }
         });
+
+        Button btn_6 = findViewById(R.id.btn_6);
+        btn_6.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        pivot_left();
+
+                    }
+                });
+            }
+        });
+
+        Button btn_7 = findViewById(R.id.btn_7);
+        btn_7.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        pivot_right();
+
+                    }
+                });
+            }
+        });
+
+        Button btn_8 = findViewById(R.id.btn_8);
+        btn_8.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        p_left();
+
+                    }
+                });
+            }
+        });
+
+        Button btn_9 = findViewById(R.id.btn_9);
+        btn_9.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        p_right();
+                    }
+                });
+            }
+        });
+
+
+        textView = findViewById(R.id.tv_status);
+
+
+        TinyHttpd.getInstance().setOnserveListener(this);
+
+        TinyHttpd.getInstance().startServer();
     }
 
 
@@ -220,6 +315,58 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+
+    /**
+     * 后左转弯
+     */
+    private void pivot_left(){
+        try {
+            gpio.setValue(true);
+            gpio1.setValue(false);
+            gpio2.setValue(true);
+            gpio3.setValue(false);
+            gpio4.setValue(false);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void pivot_right(){
+        try {
+            gpio.setValue(true);
+            gpio1.setValue(false);
+            gpio2.setValue(false);
+            gpio3.setValue(false);
+            gpio4.setValue(true);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void p_left(){
+        try {
+            gpio.setValue(true);
+            gpio1.setValue(false);
+            gpio2.setValue(true);
+            gpio3.setValue(true);
+            gpio4.setValue(false);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void p_right(){
+        try {
+            gpio.setValue(true);
+            gpio1.setValue(true);
+            gpio2.setValue(false);
+            gpio3.setValue(false);
+            gpio4.setValue(true);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     private void stop() {
 
 //        gpio.setActiveType(Gpio.ACTIVE_LOW);
@@ -244,6 +391,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         if (gpio != null) {
+            stop();
             try {
                 gpio.close();
                 gpio = null;
@@ -251,6 +399,41 @@ public class MainActivity extends AppCompatActivity {
                 Log.w(TAG, "Unable to close GPIO", e);
             }
         }
+
+        TinyHttpd.getInstance().stopServer();
+    }
+
+    @Override
+    public void onServe(String result) {
+        if (!StringUtils.isEmpty(result)){
+            textView.setText(""+result);
+            result = result.replace("/", "");
+
+            for (CONTROL_ACTION action : CONTROL_ACTION.values()){
+
+                if (result.equals(action.name() )|| result.toUpperCase().equals(action.name())){
+                    try {
+                        Log.d(TAG, "action:"+action.name());
+                        Method method = getClass().getDeclaredMethod(action.name().toLowerCase());
+                        method.invoke(MainActivity.this);
+                    } catch (NoSuchMethodException e) {
+                        e.printStackTrace();
+                    } catch (IllegalAccessException e) {
+                        e.printStackTrace();
+                    } catch (InvocationTargetException e) {
+                        e.printStackTrace();
+                    }
+
+                    break;
+                }
+            }
+
+        }
+
+
+
+
+        Log.d(TAG, "result:"+result);
     }
 
 
